@@ -1,0 +1,194 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using WMPLib;
+
+
+namespace BosBosGezen
+{
+    public partial class Form1 : Form
+    {
+        WindowsMediaPlayer wmp = new WindowsMediaPlayer();
+
+        public float acim = 0;
+        float angle=0;
+
+        Bitmap btm;
+        Graphics gra;
+
+        public Form1()
+        {
+            InitializeComponent();
+            //wmp.URL = "pacman.mp3";
+            //wmp.controls.play();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            //this.Opacity = .0;
+       
+            this.BackColor = Color.Black;
+            // Make the background color of form display transparently.
+
+            this.TransparencyKey = BackColor;
+            
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            FormBorderStyle = FormBorderStyle.None;
+            WindowState = FormWindowState.Maximized;
+
+            DoIt();
+
+            //g = Graphics.FromImage(btm);
+            //pictureBox1.Image = btm;
+        }
+        public void DoIt()
+        {
+            label1.Text = Screen.PrimaryScreen.WorkingArea.Width.ToString();
+            label2.Text = Screen.PrimaryScreen.WorkingArea.Height.ToString();
+            timer1.Start();
+            timer1.Interval = 1;
+            timer2.Start();
+            timer2.Interval = 5000;
+
+            btm = new Bitmap(pictureBox1.Image);
+            gra = this.CreateGraphics();
+            gra.ScaleTransform(1 / 17f, 1 / 17f);
+        }
+
+        private void Form1_MouseUp(object sender, MouseEventArgs e)
+        {
+            
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            label3.Text = "Cursor X: "+Cursor.Position.X.ToString()+" Y: "+ Cursor.Position.Y.ToString();
+
+            label5.Text = "cisim konumu: "+pictureBox1.Location.ToString();
+
+            //pictureBox1.Location = new Point(pictureBox1.Location.X, pictureBox1.Location.Y + 1);
+            float myX = pictureBox1.Location.X+35;
+            float myY = pictureBox1.Location.Y+35;
+            float CursorX = Cursor.Position.X;
+            float CursorY = Cursor.Position.Y;
+
+            
+            float yatay = -(myX - CursorX);
+            float dikey = (myY - CursorY);
+            label7.Text = "yatay: " + yatay;
+            label8.Text = "dikey: " + dikey;
+            angle = (float)Math.Atan2(dikey, yatay) * (float)(180 / Math.PI);
+            label10.Text = "Açı: " + angle.ToString();
+            
+
+            yatay = Math.Abs(yatay);
+            dikey = Math.Abs(dikey);
+
+            donn(angle);
+
+
+            if (yatay > 5)//yatay
+            {
+                if (myX - CursorX < 0)//sağa git
+                {
+                    //pictureBox1.Location = new Point(pictureBox1.Location.X + 2, pictureBox1.Location.Y);
+                }
+                if (myX - CursorX > 0)//sola git
+                {
+                    //pictureBox1.Location = new Point(pictureBox1.Location.X - 2, pictureBox1.Location.Y);
+                }
+            }
+            if (dikey > 5)
+            {
+                if (myY - CursorY < 0)//in
+                {
+                    //pictureBox1.Location = new Point(pictureBox1.Location.X, pictureBox1.Location.Y + 2);
+
+                }
+                if (myY - CursorY > 0)//çık
+                {
+                    //pictureBox1.Location = new Point(pictureBox1.Location.X, pictureBox1.Location.Y - 2);
+                }
+            }
+            
+
+        }
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            //wmp.URL = "pacman.mp3";
+            //wmp.controls.play();
+        }
+
+
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+                gra.Clear(Color.Transparent);
+                gra.TranslateTransform(btm.Width / 2, btm.Height / 2);
+                gra.RotateTransform(50);
+                gra.DrawImage(btm, new Point(200,200));
+                gra.TranslateTransform(-btm.Width / 2, -btm.Height / 2);
+        }
+
+        
+        public void donn(float a)
+        {
+            gra.Clear(Color.Transparent);
+            gra.TranslateTransform(btm.Width / 2, btm.Height / 2);
+            gra.RotateTransform(50);
+            gra.DrawImage(btm, new Point(0, 0));
+            gra.TranslateTransform(-btm.Width / 2, -btm.Height / 2);
+        }
+        public void don(float a)
+        {
+            a = a - acim;
+            //g = Graphics.FromImage(btm);
+            //g.Clear(Color.Transparent);
+
+            
+            Bitmap bmp = new Bitmap(pictureBox1.Image);
+            Bitmap rotatedImage = new Bitmap(pictureBox1.Image.Width, pictureBox1.Image.Height);
+            rotatedImage.SetResolution(bmp.HorizontalResolution, bmp.VerticalResolution);
+
+            using (Graphics g = Graphics.FromImage(rotatedImage))
+            {
+                g.Clear(Color.Transparent);
+                // Set the rotation point to the center in the matrix
+                g.TranslateTransform(bmp.Width/2, bmp.Height/2);
+                // Rotate
+                g.RotateTransform(-a);
+                // Restore rotation point in the matrix
+                g.TranslateTransform(-bmp.Width/2, -bmp.Height/2);
+                // Draw the image on the bitmap
+                g.DrawImage(bmp, new Point(pictureBox1.Location.X, pictureBox1.Location.Y));
+            }
+            pictureBox1.Image = rotatedImage;
+            
+            acim = acim + a;
+            label11.Text = acim.ToString();
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            pictureBox1.Location = new Point(pictureBox1.Location.X, pictureBox1.Location.Y);
+        }
+
+
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}
